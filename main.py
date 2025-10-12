@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -10,13 +11,18 @@ client = genai.Client(api_key=api_key)
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Please provide a valid prompt")
+
+    args = sys.argv[1:]
+    
+    if not args:
+        print("AI Code Assistant")
+        print("\nUsage: python main.py 'your prompt here'")
+        print("Example: python main.py 'What is the meaning of life'")
         sys.exit(1)
-    prompt = sys.argv[1]
+    user_prompt = " ".join(args)
     response = client.models.generate_content(
     model='gemini-2.0-flash-001', 
-    contents= prompt
+    contents= user_prompt
 )
 
     print(response.text)
