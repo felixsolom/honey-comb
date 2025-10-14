@@ -21,3 +21,25 @@ def get_files_info(working_directory, directory=".") -> str:
         return '\n'.join(lines)
     except Exception as e:
         return f'Error listing files: {e}'
+    
+def get_file_content(working_directory, file_path) -> str:
+    full_path = os.path.join(working_directory, file_path)
+    absolute_path = os.path.abspath(full_path)
+
+    if not absolute_path.startswith(os.path.abspath(working_directory)):
+        return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'
+
+    if not os.path.isfile(absolute_path):
+        return f'Error: File not found or is not a regular file: "{file_path}"'
+    
+    try:
+        with open(absolute_path, "r") as file:
+            file_content_string = file.read(10000)
+            extra = file.read(1)
+            if extra != "":
+                file_content_string += f'...File "{file_path}" truncated at 10000 characters'
+                return file_content_string
+            return file_content_string
+
+    except Exception as e:
+        return f'Error listing files: {e}'

@@ -1,6 +1,6 @@
 import unittest
 import textwrap
-from functions.get_files_info import get_files_info
+from functions.get_files_info import get_files_info, get_file_content
 
 class TestFileInfo(unittest.TestCase):
 
@@ -36,6 +36,18 @@ class TestFileInfo(unittest.TestCase):
         print(result)
         expected = 'Error: Cannot list "../" as it is outside the permitted working directory'
         self.assertEqual(result, expected)
+
+class TestFileContent(unittest.TestCase):
+   def test_main(self):
+      result = get_file_content("calculator", "main.py")
+      print(result)
+      with open("calculator/main.py", "r") as f:
+         expected = f.read(10000)
+        
+      self.assertEqual(result, expected)  
+
+    
+
 
 if __name__ == "__main__":
     unittest.main()
