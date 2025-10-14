@@ -46,6 +46,28 @@ class TestFileContent(unittest.TestCase):
         
       self.assertEqual(result, expected)  
 
+   def test_calc(self):
+      result = get_file_content("calculator", "pkg/calculator.py")
+      print(result)
+      with open("calculator/pkg/calculator.py", "r") as f:
+         expected = f.read(10000)
+        
+      self.assertEqual(result, expected) 
+       
+   def test_error(self):
+      result = get_file_content("calculator", "/bin/cat")
+      print(result)
+      expected = 'Error: Cannot read "/bin/cat" as it is outside the permitted working directory'
+        
+      self.assertEqual(result, expected)  
+
+   def test_error2(self):
+      result = get_file_content("calculator", "pkg/does_not_exist.py")
+      print(result)
+      expected = 'Error: File not found or is not a regular file: "pkg/does_not_exist.py"'
+        
+      self.assertEqual(result, expected)  
+
     
 
 
