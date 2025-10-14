@@ -10,9 +10,14 @@ def get_files_info(working_directory, directory=".") -> str:
     if not os.path.isdir(absolute_path):
         return f'Error: "{directory}" is not a directory'
     
-    content_of_dir = os.listdir(absolute_path)
-    files_info = f'Results for {directory}:'
-    for _, item in content_of_dir:
-        "\n".join(files_info, f'- {item}, file_size={os.path.getsize(item)}, is_dir={os.path.isdir(item)}')
-    
-    return files_info
+    try:
+        content_of_dir = sorted(os.listdir(absolute_path))
+        lines = [f'Results for {directory} directory:']
+        for item in content_of_dir:
+            if not item.startswith("__"):
+                item_path = os.path.join(absolute_path, item)
+                lines.append(f'- {item}: file_size={os.path.getsize(item_path)} bytes, is_dir={os.path.isdir(item_path)}')
+        
+        return '\n'.join(lines)
+    except Exception as e:
+        return f'Error listing files: {e}'
