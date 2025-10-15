@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 def get_files_info(working_directory, directory=".") -> str:
     full_path = os.path.join(working_directory, directory)
@@ -70,5 +71,25 @@ def write_file(working_directory, file_path, content) -> str:
 
 
 
+def run_python_file(working_directory: str , file_path: str, args=[]) -> str:
+    full_path = os.path.join(working_directory, file_path)
+    absolute_path = os.path.abspath(full_path)
+
+    if not absolute_path.startswith(os.path.abspath(working_directory)):
+        return f'Error: Cannot execute "{file_path}" as it is outside the permitted working directory'
     
+    if not os.path.exists(absolute_path):
+        return f'Error: File "{file_path}" not found.'
+    
+    if not file_path.endswith(".py"):
+        return f'Error: "{file_path}" is not a Python file.'
+    
+    try: 
+        completed_process = subprocess.run(f'uv run {absolute_path} {args}', timeout=30)
+        return f'STDOUT: {completed_process.stdout}\nSTDERR: {completed_process.stderr}'
+    except Exception as e:
+        return f"Error: executing Python file: {e}"
+    
+
+
 
