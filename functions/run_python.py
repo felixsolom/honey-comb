@@ -3,6 +3,7 @@ import subprocess
 
 
 def run_python_file(working_directory: str , file_path: str, args=[]) -> str:
+    absolute_working_dir = os.path.abspath(working_directory)
     full_path = os.path.join(working_directory, file_path)
     absolute_path = os.path.abspath(full_path)
 
@@ -22,7 +23,7 @@ def run_python_file(working_directory: str , file_path: str, args=[]) -> str:
             capture_output=True,
             text=True,
             timeout=30,
-            cwd=working_directory
+            cwd=absolute_working_dir
         )
 
         output = []

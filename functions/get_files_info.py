@@ -23,7 +23,7 @@ def get_files_info(working_directory, directory=".") -> str:
     except Exception as e:
         return f'Error listing files: {e}'
     
-def get_file_content(working_directory, file_path) -> str:
+def get_file_content(working_directory: str, file_path: str) -> str:
     full_path = os.path.join(working_directory, file_path)
     absolute_path = os.path.abspath(full_path)
 
@@ -45,7 +45,7 @@ def get_file_content(working_directory, file_path) -> str:
     except Exception as e:
         return f'Error reading file {file_path}: {e}'
     
-def write_file(working_directory, file_path, content) -> str:
+def write_file(working_directory: str, file_path: str, content: str) -> str:
     full_path = os.path.join(working_directory, file_path)
     absolute_path = os.path.abspath(full_path)
 
