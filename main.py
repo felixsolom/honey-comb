@@ -5,6 +5,9 @@ from google import genai
 from google.genai import types
 from config import SYSTEM_PROMPT
 from functions.schema import available_functions
+from functions.call_functions import call_function
+from functions.get_files_info import get_files_info, get_file_content, write_file
+from functions.run_python import run_python_file
 
 def main():
     load_dotenv()
@@ -44,10 +47,14 @@ def generate_content(client, messages, verbose):
     if verbose:
         print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
         print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-    print("Response:")
-    for part in response.function_calls:
-        print(f'Calling function: {part.name}({part.args})')
-    print(response.text)
+
+    if response.function_calls:
+        if verbose:  
+            for function_call in response.function_calls:
+                function_result = call_function(function_call, verbose)
+        if not function_result.parts[0].function_response.response:
+            raise Exception("Function didn't return proper response")
+        print(f"-> {function_result.parts[0].function_response.response}")
 
 if __name__ == "__main__":
     main()
