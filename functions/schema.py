@@ -65,11 +65,26 @@ schema_run_python_file = types.FunctionDeclaration(
     ),
 )
 
+schema_web_search = types.FunctionDeclaration(
+    name="web_search",
+    description="Performs a web search using a search engine and returns the results",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "query": types.Schema(
+                type=types.Type.STRING,
+                description="The search query",
+            ),
+        },
+    ),
+)
+
 available_functions = types.Tool(
     function_declarations=[
         schema_get_files_info,
         schema_get_file_content,
         schema_write_file,
-        schema_run_python_file
-    ]
+        schema_run_python_file,
+        schema_web_search
+    ] 
 )
