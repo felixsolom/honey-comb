@@ -10,41 +10,51 @@ from functions.call_functions import call_function
 def main():
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("Error: GEMINI_API_KEY not found in environment variables")
+        sys.exit(1)
     client = genai.Client(api_key=api_key)
 
     verbose = "--verbose" in sys.argv
-    args = []
-    for arg in sys.argv[1:]:
-        if not arg.startswith("--"):
-            args.append(arg)
-    
-    if not args:
-        print("AI Code Assistant")
-        print("\nUsage: python main.py 'your prompt here'")
-        print("Example: python main.py 'What is the meaning of life'")
-        sys.exit(1)
-    user_prompt = " ".join(args)
 
-    if verbose:
-        print(f"User prompt: {user_prompt}")
+    print('AI Code Assistant')
+    print("Enter '/quit' to quit the session")
 
-    messages = [
-    types.Content(role="user", parts=[types.Part(text=user_prompt)]),
-    ]
+    messages = []
 
-    max_turns = 20
-    for turn in range(max_turns):
+    while True:
         try: 
-            response_text = generate_content(client, messages, verbose)
-            if response_text:
-                print(response_text)
+            user_prompt = input("> ")
+            if user_prompt.lower  == "/quit":
                 break
-        except Exception as e:
-            print(f"Error on turn {turn + 1}: {e}")
-            if turn == max_turns - 1:
-                print("Max tries reached. Exiting.")
-            else:
-                print("Retrying...")
+            
+            messages.append(
+                types.Content(
+                    role="user",
+                    parts=[types.Part(text=user_prompt)]
+                )
+            )
+
+            if verbose:
+                print(f"User prompt: {user_prompt}")
+
+            max_turns = 20
+            for turn in range(max_turns):
+                try: 
+                    response_text = generate_content(client, messages, verbose)
+                    if response_text:
+                        print(f"AI: {response_text}")
+                        break
+                except Exception as e:
+                    print(f"Error on turn {turn + 1}: {e}")
+                    if turn == max_turns - 1:
+                        print("Max tries reached. Exiting.")
+                    else:
+                        print("Retrying...")
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            break 
+        
 
 
 def generate_content(client: genai.Client, messages: list, verbose: bool) -> str | None:
