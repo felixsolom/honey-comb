@@ -1,8 +1,9 @@
 from google.genai import types
 from functions.get_files_info import get_files_info, get_file_content, write_file
 from functions.run_python import run_python_file
+from config import WORKING_DIR
 
-CALLING_FUNCTIONS = {
+FUNCTIONS_MAP = {
     "get_files_info": get_files_info,
     "write_file": write_file,
     "get_file_content": get_file_content,
@@ -13,12 +14,13 @@ CALLING_FUNCTIONS = {
 def call_function(function_call_part: types.FunctionCall, verbose=False) -> types.Content:
     if verbose:
         print(f"Calling function: {function_call_part.name}({function_call_part.args})")
-    print(f" - Calling function: {function_call_part.name}")
+    else:
+        print(f" - Calling function: {function_call_part.name}")
 
     function_name = function_call_part.name
     function_args = function_call_part.args 
 
-    if function_name not in CALLING_FUNCTIONS:
+    if function_name not in FUNCTIONS_MAP:
         return types.Content(
     role="tool",
     parts=[
@@ -28,8 +30,9 @@ def call_function(function_call_part: types.FunctionCall, verbose=False) -> type
         )
     ],
 )
-    function_to_call = CALLING_FUNCTIONS[function_name]
-    function_result = function_to_call("calculator", **function_args)
+    args = dict(function_args)
+    args["working_directory"] = WORKING_DIR
+    function_result = FUNCTIONS_MAP[function_name](**args)
 
     return types.Content(
     role="tool",
