@@ -1,11 +1,13 @@
 import os
+import re
 import sys
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from  system_prompt import SYSTEM_PROMPT
+from system_prompt import SYSTEM_PROMPT
 from functions.schema import available_functions
 from functions.call_functions import call_function
+
 
 def main():
     load_dotenv()
@@ -17,22 +19,19 @@ def main():
 
     verbose = "--verbose" in sys.argv
 
-    print('AI Code Assistant')
+    print("AI Code Assistant")
     print("Enter '/quit' to quit the session")
 
     messages = []
 
     while True:
-        try: 
+        try:
             user_prompt = input("> ")
-            if user_prompt.lower  == "/quit":
+            if user_prompt.lower == "/quit":
                 break
-            
+
             messages.append(
-                types.Content(
-                    role="user",
-                    parts=[types.Part(text=user_prompt)]
-                )
+                types.Content(role="user", parts=[types.Part(text=user_prompt)])
             )
 
             if verbose:
@@ -40,7 +39,7 @@ def main():
 
             max_turns = 20
             for turn in range(max_turns):
-                try: 
+                try:
                     response_text = generate_content(client, messages, verbose)
                     if response_text:
                         print(f"AI: {response_text}")
@@ -53,29 +52,28 @@ def main():
                         print("Retrying...")
         except KeyboardInterrupt:
             print("\nExiting...")
-            break 
-        
+            break
 
 
 def generate_content(client: genai.Client, messages: list, verbose: bool) -> str | None:
     response = client.models.generate_content(
-        model='gemini-2.0-flash-001', 
-        contents= messages,
+        model="gemini-2.0-flash-001",
+        contents=messages,
         config=types.GenerateContentConfig(
-            tools=[available_functions], 
-            system_instruction=SYSTEM_PROMPT
-        )
+            tools=[available_functions], system_instruction=SYSTEM_PROMPT
+        ),
     )
 
     if response.candidates and response.candidates[0].content:
         messages.append(response.candidates[0].content)
 
     if verbose:
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        if response.usage_metadata:
+            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
     if not response.function_calls:
-        return response.text 
+        return response.text
 
     function_responses = []
     for function_call_part in response.function_calls:
@@ -91,15 +89,12 @@ def generate_content(client: genai.Client, messages: list, verbose: bool) -> str
 
     if not function_responses:
         raise Exception("No function responses generated. Exiting")
-    
-    content = types.Content(
-        role="tool",
-        parts=function_responses
-    )
+
+    content = types.Content(role="tool", parts=function_responses)
     messages.append(content)
 
     return None
 
+
 if __name__ == "__main__":
     main()
-
