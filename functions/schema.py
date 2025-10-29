@@ -79,12 +79,67 @@ schema_web_search = types.FunctionDeclaration(
     ),
 )
 
+schema_git_status = types.FunctionDeclaration(
+    name="run_git_status",
+    description="Runs git status and returns the output",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={},
+    ),
+)
+
+schema_git_diff = types.FunctionDeclaration(
+    name="run_git_diff",
+    description="Runs 'git diff' on a specific file or an entire project.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The file path to the file to run diff. If not provided, shows all changes",
+            ),
+        },
+    ),
+)
+
+schema_git_commit = types.FunctionDeclaration(
+    name="run_git_commit",
+    description="Runs 'git commit' with the given message.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "message": types.Schema(
+                type=types.Type.STRING,
+                description="The commit message",
+            ),
+        },
+    ),
+)
+
+
+schema_git_add = types.FunctionDeclaration(
+    name="run_git_add",
+    description="Runs 'git add' command on a specific file to stage it to a commit",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the file to add",
+            ),
+        },
+    ),
+)
 available_functions = types.Tool(
     function_declarations=[
         schema_get_files_info,
         schema_get_file_content,
         schema_write_file,
         schema_run_python_file,
-        schema_web_search
-    ] 
+        schema_web_search,
+        schema_git_status,
+        schema_git_diff,
+        schema_git_add,
+        schema_git_status,
+    ]
 )
