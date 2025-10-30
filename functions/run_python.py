@@ -1,5 +1,4 @@
 import os
-from sys import exception
 import docker
 from docker.errors import BuildError, ContainerError, DockerException, ImageNotFound
 import shlex
@@ -21,44 +20,47 @@ def run_python_file(working_directory: str, file_path: str, args: str = "") -> s
         client.images.get(image_tag)
     except ImageNotFound:
         return f"Error: Docker image {image_tag} not found. Build it with 'Docker build -t {image_tag} .'"
-            
-    
+
     try:
         real_working_dir = os.path.realpath(working_directory)
         full_path = os.path.join(working_directory, file_path)
         real_file_path = os.path.realpath(full_path)
 
         if not real_file_path.startswith(real_working_dir + os.sep):
-            return f'Error: Path traversal detected in {file_path}' 
+            return f"Error: Path traversal detected in {file_path}"
 
-    if not os.path.exists(absolute_path):
-        return f'Error: File "{file_path}" not found.'
+        if not os.path.exists(real_file_path):
+            return f'Error: File "{file_path}" not found.'
+    except (OSError, ValueError) as e:
+        return f"Error: Invalid path - {e}"
 
-    with open(absolute_path, "r") as f:
-        script_content = f.read()
-
-    cmd = ["python", "-c", script_content]
+    cmd = ["python", f"home/appuser/workspace/{file_path}"]
     if args:
-        cmd.extend(shlex.split(args))
-
+        try:
+            cmd.extend(shlex.split(args))
+        except ValueError as e:
+            return f"Error: Invalid argumemts - {e}"
     try:
-        vols = {
-            os.path.abspath(working_directory): {
-                "bind": "/home/appuser/workspace",
-                "mode": "ro",
-            }
-        }
-
         container_output = client.containers.run(
             image=image_tag,
             command=cmd,
             working_dir="/home/appuser/workspace",
-            volumes=vols,
+            volumes={
+                os.path.abspath(real_working_dir): {
+                    "bind": "/home/appuser/workspace",
+                    "mode": "ro",
+                }
+            },
             remove=True,
             stderr=True,
             stdout=True,
+            network_disabled=True,
+            mem_limit="512m",
+            cpu_quota=50000,
         )
-        return container_output.decode("utf-8")
+        if isinstance(container_output, bytes):
+            return container_output.decode("utf-8")
+        return str(container_output)
 
     except ContainerError as e:
         stderr_output = ""

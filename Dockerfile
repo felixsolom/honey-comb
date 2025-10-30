@@ -4,4 +4,5 @@ RUN useradd --create-home appuser
 
 USER appuser
 
-WORKDIR /home/appuser
+WORKDIR home/appuser
+
