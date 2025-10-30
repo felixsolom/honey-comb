@@ -34,7 +34,7 @@ def run_python_file(working_directory: str, file_path: str, args: str = "") -> s
     except (OSError, ValueError) as e:
         return f"Error: Invalid path - {e}"
 
-    cmd = ["python", f"home/appuser/workspace/{file_path}"]
+    cmd = ["python", file_path]
     if args:
         try:
             cmd.extend(shlex.split(args))

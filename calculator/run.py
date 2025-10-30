@@ -1,0 +1,4 @@
+import os
+print(os.getcwd())
+import subprocess
+subprocess.run(['python', 'main.py', '2 + 2'])
