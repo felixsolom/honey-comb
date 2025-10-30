@@ -1,9 +1,10 @@
 import os
-import re
 import sys
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from rich.console import Console
+from rich.markdown import Markdown
 from system_prompt import SYSTEM_PROMPT
 from functions.schema import available_functions
 from functions.call_functions import call_function
@@ -19,15 +20,17 @@ def main():
 
     verbose = "--verbose" in sys.argv
 
-    print("AI Code Assistant")
-    print("Enter '/quit' to quit the session")
+    console = Console()
+
+    console.print("[bold green]AI Code Assistant[/bold green]")
+    console.print("Enter 'exit' or 'quit' to quit the session")
 
     messages = []
 
     while True:
         try:
-            user_prompt = input("> ")
-            if user_prompt.lower == "/quit":
+            user_prompt = console.input("[bold yellow]> [/bold yellow]")
+            if user_prompt.lower in ["exit", "quit"]:
                 break
 
             messages.append(
@@ -35,27 +38,31 @@ def main():
             )
 
             if verbose:
-                print(f"User prompt: {user_prompt}")
+                console.print(f"User prompt: {user_prompt}")
 
             max_turns = 20
             for turn in range(max_turns):
                 try:
                     response_text = generate_content(client, messages, verbose)
                     if response_text:
-                        print(f"AI: {response_text}")
+                        console.print(Markdown(response_text))
                         break
                 except Exception as e:
-                    print(f"Error on turn {turn + 1}: {e}")
+                    console.print(f"[bold red]Error on turn {turn + 1}:[/bold red] {e}")
                     if turn == max_turns - 1:
-                        print("Max tries reached. Exiting.")
+                        console.print(
+                            "[bold red]Max tries reached. Exiting.[/bold red]"
+                        )
                     else:
-                        print("Retrying...")
+                        console.print("[yellow]Retrying...[/yellow]")
         except KeyboardInterrupt:
-            print("\nExiting...")
+            console.print("\n[bold red]Exiting...[/bold red]")
             break
 
 
 def generate_content(client: genai.Client, messages: list, verbose: bool) -> str | None:
+    console = Console()
+
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,
@@ -69,8 +76,12 @@ def generate_content(client: genai.Client, messages: list, verbose: bool) -> str
 
     if verbose:
         if response.usage_metadata:
-            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+            console.print(
+                f"Prompt tokens: {response.usage_metadata.prompt_token_count}"
+            )
+            console.print(
+                f"Response tokens: {response.usage_metadata.candidates_token_count}"
+            )
 
     if not response.function_calls:
         return response.text
@@ -84,7 +95,9 @@ def generate_content(client: genai.Client, messages: list, verbose: bool) -> str
         ):
             raise Exception("Empty function call result")
         if verbose:
-            print(f"-> {function_call_result.parts[0].function_response.response}")
+            console.print(
+                f"-> {function_call_result.parts[0].function_response.response}"
+            )
         function_responses.append(function_call_result.parts[0])
 
     if not function_responses:

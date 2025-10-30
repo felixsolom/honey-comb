@@ -1,2 +1,2 @@
 # honey-comb
-Agentic AI editor 
+Agentic AI editor
