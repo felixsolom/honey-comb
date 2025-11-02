@@ -1,10 +1,15 @@
 [project]
 name = "honey-comb"
 version = "0.1.0"
-description = "Agentic AI editor"
+description = "An advanced, agentic AI assistant for software development."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "google-genai==1.12.1",
-    "python-dotenv==1.1.0",
+  "google-genai==1.12.1",
+  "python-dotenv==1.1.0",
+  "rich",
+  "duckduckgo-search",
+  "requests",
+  "beautifulsoup4",
+  "docker",
 ]
