@@ -1,89 +1,193 @@
-🍯 Honey Comb: An AI-Powered Software Development Agent
 
-  Honey Comb is an advanced, agentic AI assistant designed to streamline software development tasks. Powered by Google's Gemini
-  Pro, this intelligent agent can understand complex requests, use a variety of tools to interact with a codebase, and even access
-  the internet for research. It's a powerful demonstration of how AI can be leveraged to build sophisticated and secure developer
-  tools.
+# 🍯 Honey Comb: AI-Powered Software Development Agent
 
-<br>
+An intelligent coding assistant that combines Google's Gemini Pro with secure sandboxed execution to help developers write, test, and manage code safely.
 
-  !GIF Demo Placeholder (<https://placehold.co/800x400/222/fff?text=Add+a+GIF+Demo+Here>)
-  (Suggestion: Record a short GIF of the agent in action and replace the placeholder above to make this README even more
-  engaging.)
+## 🎯 Project Overview
 
-<br>
+Honey Comb demonstrates advanced AI engineering principles by building a production-ready agentic system. Unlike simple chatbots, this agent can plan multi-step tasks, use multiple tools autonomously, and execute code in isolated environments—all while maintaining strict security boundaries.
 
-  ✨ Key Features
+**Key Achievement**: Built a secure, tool-using AI agent that can modify codebases while preventing unauthorized system access through Docker isolation and user confirmation workflows.
 
-  Honey Comb is more than just a chatbot. It's a true agent with a suite of powerful capabilities:
+## ✨ Features
 
-* 🤖 Agentic AI Core: Utilizes Google's Gemini Pro model to make intelligent plans and use a variety of tools to accomplish
-complex tasks.
-  * 💬 Interactive Chat Interface: A polished, rich-powered command-line interface for a smooth and intuitive user experience.
-  * 🧰 Multi-Tool Functionality: The agent is equipped with a versatile set of tools, including:
-    * File System Operations: Can read, write, and list files within the project directory.
-    * Git Integration: Can check the status of the repository, view diffs, and commit changes.
-    * Web Search: Can access the internet using the DuckDuckGo Search API to research solutions and gather information.
-    * Code Execution: Can run Python scripts to test code and perform other tasks.
-  * 🔒 Secure Sandboxed Execution: All Python code is executed in a secure, isolated Docker container, preventing it from
-     accessing the host system. This demonstrates a strong commitment to security best practices.
-  * 🤝 User Confirmation: For potentially destructive operations like writing files or making commits, the agent will always ask
-     for user confirmation, ensuring you have the final say.
-  * 💅 Rich CLI Output: All output is beautifully formatted with rich, including Markdown rendering for the AI's responses,
-     making code blocks, lists, and other elements easy to read.
+### Agentic Intelligence
 
-  🛠️ Tech Stack
+- **Multi-step Planning**: Powered by Google Gemini Pro with function calling to break down complex development tasks
+- **Autonomous Tool Selection**: Intelligently chooses from 7+ tools based on task requirements
+- **Context Awareness**: Maintains conversation history to handle follow-up requests
 
-  This project demonstrates proficiency in a modern, robust tech stack:
+### Development Tools
 
-  * Backend: Python 3.11+
-  * AI: Google Gemini Pro API
-  * Package Management: uv
-  * Containerization: Docker
-  * CLI: rich
-  * Core Libraries: google-generativeai, docker, duckduckgo-search, requests, beautifulsoup4
+- **File System Operations**: Read, write, and list files within project scope
+- **Git Integration**: Check status, view diffs, and commit changes
+- **Web Research**: DuckDuckGo integration for searching documentation and solutions
+- **Python Execution**: Run and test code with full output capture
 
-  🚀 Getting Started
+### Security & Safety
 
-  Follow these instructions to get your own instance of Honey Comb up and running.
+- **Sandboxed Execution**: All Python code runs in isolated Docker containers with:
+  - No network access
+  - Read-only filesystem mounts
+  - Memory and CPU limits (512MB, 50% CPU)
+  - Path traversal prevention
+- **User Confirmation**: Prompts before destructive operations (file writes, commits)
+- **Input Validation**: Sanitizes file paths and validates Python file extensions
 
-  Prerequisites
+### User Experience
 
-  * Python 3.11+
-  * Docker (<https://www.docker.com/get-started>)
-  * uv (<https://github.com/astral-sh/uv>) (Python package installer)
-  * A Google Gemini API Key. You can get one from Google AI Studio (<https://aistudio.google.com/app/apikey>).
+- **Rich CLI Interface**: Beautiful terminal UI with Markdown rendering
+- **Real-time Feedback**: Streaming responses with proper code highlighting
+- **Clear Error Messages**: Helpful context for debugging issues
 
-  Installation
+## 🛠️ Tech Stack
 
-   1. Clone the repository:
-   1  git clone <https://github.com/felixsolomon/honey-comb.git>
-   2     cd honey-comb
+**Core Technologies**
 
-   2. Create a virtual environment and install dependencies:
+- Python 3.11+ with type hints (Pyright strict mode)
+- Google Gemini Pro API (function calling)
+- Docker SDK for secure code execution
+- `uv` for fast dependency management
 
-   1     uv venv
-   2     uv pip install -r pyproject.toml
+**Key Libraries**
 
-   3. Set up your environment variables:
-       * Create a file named .env in the root of the project.
-       * Add your Gemini API key to the .env file like this:
+- `google-generativeai` - AI model integration
+- `docker` - Container orchestration
+- `rich` - Terminal UI rendering
+- `duckduckgo-search` - Web research
+- `beautifulsoup4` - HTML parsing
 
-   1         GEMINI_API_KEY="YOUR_API_KEY_HERE"
+## 🚀 Getting Started
 
-  Usage
+### Prerequisites
 
-  To start the agent in interactive mode, simply run:
+- Python 3.11 or higher
+- [Docker](https://www.docker.com/get-started) (running daemon required)
+- [uv](https://github.com/astral-sh/uv) package manager
+- [Google Gemini API key](https://aistudio.google.com/app/apikey)
 
-   1 python main.py
+### Installation
 
-  You can then start giving instructions to the agent at the prompt.
+1. **Clone the repository**
 
-  🔮 Future Improvements
+```bash
+git clone https://github.com/felixsolom/honey-comb.git
+cd honey-comb
+```
 
-  This project has a solid foundation, and there are many exciting possibilities for future   development:
+2. **Install dependencies**
 
-  * Project Scaffolding: Teach the agent to create new projects from scratch.
-  * Automated Testing: Empower the agent to write and run its own tests.
-  * Session History: Implement a feature to save and load conversation history.
-  * Configuration File: Add a config.yaml file to make it easier to manage settings.
+```bash
+uv venv
+source .venv/bin/activate # On Windows: .venv\Scripts\activate
+uv pip install -r pyproject.toml
+```
+
+3. **Configure environment**
+Create `.env` in the project root:
+GEMINI_API_KEY="your_api_key_here"
+
+4. **Set up Docker sandbox**
+Build the sandbox image:
+
+```bash
+docker build -t honey-comb-sandbox .
+```
+
+### Configuration
+
+The agent operates on a target codebase specified in `config.py`:
+
+```bash
+config.py
+WORKING_DIR = "./calculator" # Change to your project path
+```
+
+**Options:**
+
+- Use the default `./calculator` directory (included)
+- Point to your own project: `WORKING_DIR = "/path/to/your/project"`
+
+### Usage
+
+Start the interactive agent:
+
+```bash
+python main.py
+```
+
+**Example commands:**
+
+```bash
+Add a new function to calculate fibonacci numbers
+Run the tests and fix any failures
+Search for how to implement LRU cache in Python
+Show me the git diff
+```
+
+## 📁 Project Structure
+
+```bash
+honey-comb/
+├── agent.py # Core agent logic with tool calling
+├── tools.py # Tool implementations (file ops, git, search)
+├── config.py # Configuration settings
+├── main.py # CLI entry point
+├── Dockerfile # Sandbox container definition
+├── calculator/ # Example project
+└── .env # API keys (not in repo)
+```
+
+## 🏗️ Architecture Highlights
+
+**Agentic Loop**: Request → Planning → Tool Selection → Execution → Response → Repeat
+
+**Security Layers**:
+
+1. Path validation (prevents directory traversal)
+2. Docker isolation (filesystem + network)
+3. Resource limits (memory, CPU, timeout)
+4. User confirmation gates
+
+**Error Handling**: Comprehensive exception catching with helpful messages for API errors, Docker issues, and file operations
+
+## 🔮 Roadmap
+
+**Implemented:**
+
+- ✅ Secure sandboxed Python execution
+- ✅ Multi-tool agent with function calling
+- ✅ Git operations with user confirmation
+- ✅ Web search integration
+- ✅ Rich terminal UI with Markdown
+
+**Future Enhancements:**
+
+- [ ] Project scaffolding from templates
+- [ ] Automated test generation and execution
+- [ ] Conversation history persistence
+- [ ] YAML-based configuration
+- [ ] Support for more languages (Node.js, Go)
+- [ ] VS Code extension integration
+
+## 🤝 Contributing
+
+This is a portfolio project, but suggestions are welcome! Feel free to:
+
+- Open issues for bugs or feature ideas
+- Submit PRs with improvements
+- Share how you've used it in your own projects
+
+## 📝 License
+
+MIT License - see [LICENSE](LICENSE) for details
+
+## 👤 Author
+
+**Felix Solomon**
+
+- GitHub: [@felixsolom](https://github.com/felixsolom)
+
+---
+
+**⭐ If you found this project interesting, please give it a star!**
