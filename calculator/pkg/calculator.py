@@ -17,7 +17,11 @@ class Calculator:
         if not expression or expression.isspace():
             return None
         tokens = expression.strip().split()
-        return self._evaluate_infix(tokens)
+        try:
+            return self._evaluate_infix(tokens)
+        except Exception as e:
+            print(f"Unexpected error in evaluate: {type(e)}, {e}")
+            return None
 
     def _evaluate_infix(self, tokens):
         values = []

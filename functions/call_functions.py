@@ -8,6 +8,7 @@ from functions.git_operations import (
 )
 from functions.run_python import run_python_file
 from functions.web_search import web_search
+from rich.console import Console
 from config import WORKING_DIR
 
 FUNCTIONS_MAP = {
@@ -22,10 +23,19 @@ FUNCTIONS_MAP = {
     "run_git_diff": run_git_diff,
 }
 
+DANGEROUS_FUNCTIONS = {
+    "write_file": write_file,
+    "run_python_file": run_python_file,
+    "run_git_add": run_git_add,
+    "run_git_commit": run_git_commit,
+}
+
 
 def call_function(
     function_call_part: types.FunctionCall, verbose=False
 ) -> types.Content:
+    console = Console()
+
     function_name = function_call_part.name
 
     if function_name is None:
@@ -43,6 +53,31 @@ def call_function(
         print(f"Calling function: {function_call_part.name}({function_call_part.args})")
     else:
         print(f" - Calling function: {function_call_part.name}")
+
+    if function_name in DANGEROUS_FUNCTIONS:
+        console.print(
+            "[bold yellow]Warning:[/bold yellow] The AI is requesting to perform potentially dangerous operation."
+        )
+        console.print(f"  - Function: [bold red]{function_name}[/bold red]")
+        if function_call_part.args:
+            console.print(
+                f"  - Arguments: [bold red]{function_call_part.args}[/bold red]"
+            )
+        try:
+            confirmation = console.input("Do you want to proceed (y/n)")
+        except KeyboardInterrupt:
+            confirmation = "n"
+
+        if confirmation.lower() != "y":
+            return types.Content(
+                role="tool",
+                parts=[
+                    types.Part.from_function_response(
+                        name=function_name,
+                        response={"error": "User cancelled the operation"},
+                    )
+                ],
+            )
 
     if function_name not in FUNCTIONS_MAP:
         return types.Content(
